@@ -1,0 +1,23 @@
+{
+  "name": "new_nfcs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "run": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unnitallman/nfcs_scale_calculator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/unnitallman/nfcs_scale_calculator/issues"
+  },
+  "homepage": "https://github.com/unnitallman/nfcs_scale_calculator#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
