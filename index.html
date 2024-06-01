@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Need for Closure Scale</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+        }
+        .question {
+            display: none;
+        }
+        .question.active {
+            display: block;
+        }
+        .options {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .options label {
+            display: block;
+            margin: 10px 0;
+        }
+        .progress {
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #previous-button {
+            background-color: #6c757d;
+            color: white;
+        }
+        #next-button {
+            background-color: #007bff;
+            color: white;
+        }
+        #retake-button {
+            background-color: #28a745;
+            color: white;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="questionnaire">
+            <div class="progress">
+                <span id="progress-text">1/33 questions</span>
+            </div>
+            <form id="survey-form">
+                <!-- Questions will be dynamically injected here -->
+            </form>
+            <div class="button-container">
+                <button id="previous-button" type="button" style="display:none;">Previous</button>
+                <button id="next-button" type="button">Next</button>
+            </div>
+        </div>
+        <div id="result" style="display:none;">
+            <h2>Survey Results</h2>
+            <p>Total Score: <span id="total-score"></span></p>
+            <div id="category-scores"></div>
+            <p>Need for closure is the desire for certainty. The need for closure scale measures the degree to which a person has that desire. People who obtain high scores on this scale value order, dislike ambiguity, make decisions, and form impressions quickly and have strong opinions.</p>
+            <button id="retake-button" type="button">Re-take the survey</button>
+        </div>
+    </div>
+    <div class="footer">
+        The original NFCS was developed and published in 1994 by Webster and Kruglanski. An updated version of the NFCS, was published in 2007 by Roets and Van Hiel.<br>
+        Webster, D. M., & Kruglanski, A. W. (1994). Individual differences in need for cognitive closure. Journal of Personality and Social Psychology, 67(6), 1049–1062.<br>
+        Roets, A., & Van Hiel, A. (2007). Separating ability from need: Clarifying the dimensional structure of the need for closure scale. Personality and Social Psychology Bulletin, 33(2), 266-280.
+    </div>
+    <script>
+        const questions = [
+            { id: 1, text: "I think that having clear rules and order at work is essential for success", category: "a", type: "N" },
+            { id: 2, text: "Even after I've made up my mind about something, I am always eager to consider a different opinion.", category: "e", type: "R" },
+            { id: 3, text: "I don't like situations that are uncertain", category: "d", type: "N" },
+            { id: 4, text: "I dislike questions which could be answered in many different ways.", category: "e", type: "N" },
+            { id: 5, text: "I like to have friends who are unpredictable", category: "b", type: "R" },
+            { id: 6, text: "I find that a well ordered life with regular hours suits my temperament.", category: "a", type: "N" },
+            { id: 7, text: "When dining out, I like to go to places where I have been before so that I know what to expect.", category: "b", type: "N" },
+            { id: 8, text: "I feel uncomfortable when I don't understand the reason why an event occurred in my life.", category: "d", type: "N" },
+            { id: 9, text: "I feel irritated when one person disagrees with what everyone else in a group believes.", category: "e", type: "N" },
+            { id: 10, text: "I hate to change my plans at the last minute.", category: "a", type: "N" },
+            { id: 11, text: "I don't like to go into a situation without knowing what I can expect from it.", category: "b", type: "N" },
+            { id: 12, text: "When I have made a decision, I feel relieved.", category: "c", type: "N" },
+            { id: 13, text: "When I am confronted with a problem, I’m dying to reach a solution very quickly.", category: "c", type: "N" },
+            { id: 14, text: "When I am confused about an important issue, I feel very upset.", category: "d", type: "N" },
+            { id: 15, text: "I would quickly become impatient and irritated if I would not find a solution to a problem immediately.", category: "c", type: "N" },
+            { id: 16, text: "I would rather make a decision quickly than sleep over it.", category: "c", type: "N" },
+            { id: 17, text: "Even if I get a lot of time to make a decision, I still feel compelled to decide quickly.", category: "c", type: "N" },
+            { id: 18, text: "I think it is fun to change my plans at the last moment.", category: "b", type: "R" },
+            { id: 19, text: "I enjoy the uncertainty of going into a new situation without knowing what might happen.", category: "b", type: "R" },
+            { id: 20, text: "My personal space is usually messy and disorganized.", category: "a", type: "R" },
+            { id: 21, text: "In most social conflicts, I can easily see which side is right and which is wrong.", category: "d", type: "N" },
+            { id: 22, text: "I almost always feel hurried to reach a decision, even when there is no reason to do so.", category: "c", type: "N" },
+            { id: 23, text: "I believe that orderliness and organization are among the most important characteristics of a good student.", category: "a", type: "N" },
+            { id: 24, text: "When considering most conflict situations, I can usually see how both sides could be right.", category: "e", type: "R" },
+            { id: 25, text: "I don't like to be with people who are capable of unexpected actions.", category: "b", type: "N" },
+            { id: 26, text: "I prefer to socialize with familiar friends because I know what to expect from them.", category: "b", type: "N" },
+            { id: 27, text: "I think that I would learn best in a class that lacks clearly stated objectives and requirements.", category: "a", type: "R" },
+            { id: 28, text: "When thinking about a problem, I consider as many different opinions on the issue as possible.", category: "e", type: "R" },
+            { id: 29, text: "I like to know what people are thinking all the time.", category: "d", type: "N" },
+            { id: 30, text: "I dislike it when a person's statement could mean many different things.", category: "d", type: "N" },
+            { id: 31, text: "It's annoying to listen to someone who cannot seem to make up his or her mind.", category: "d", type: "N" },
+            { id: 32, text: "I find that establishing a consistent routine enables me to enjoy life more.", category: "a", type: "N" },
+            { id: 33, text: "I enjoy having a clear and structured mode of life.", category: "a", type: "N" }
+        ];
+
+        const categories = {
+        "a": "Need for order",
+        "b": "Need for predictability",
+        "c": "Decisiveness",
+        "d": "Avoidance of ambiguity",
+        "e": "Closed mindedness"
+    };
+
+    const surveyForm = document.getElementById('survey-form');
+    const nextButton = document.getElementById('next-button');
+    const previousButton = document.getElementById('previous-button');
+    const resultSection = document.getElementById('result');
+    const questionProgress = document.getElementById('progress-text');
+    const retakeButton = document.getElementById('retake-button');
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    function displayQuestion(index) {
+        const questionData = questions[index];
+        surveyForm.innerHTML = `
+            <div class="question active">
+                <p>${questionData.text}</p>
+                <div class="options">
+                    <div>
+                        <label><input type="radio" name="q${questionData.id}" value="1" required> Strongly disagree</label>
+                        <label><input type="radio" name="q${questionData.id}" value="2"> Moderately disagree</label>
+                        <label><input type="radio" name="q${questionData.id}" value="3"> Slightly disagree</label>
+                    </div>
+                    <div>
+                        <label><input type="radio" name="q${questionData.id}" value="4"> Slightly agree</label>
+                        <label><input type="radio" name="q${questionData.id}" value="5"> Moderately agree</label>
+                        <label><input type="radio" name="q${questionData.id}" value="6"> Strongly agree</label>
+                    </div>
+                </div>
+            </div>
+        `;
+        questionProgress.textContent = `${index + 1}/${questions.length} questions`;
+        previousButton.style.display = index > 0 ? 'inline-block' : 'none';
+    }
+
+    function calculateScore() {
+        let totalScore = 0;
+        const categoryScores = { "a": 0, "b": 0, "c": 0, "d": 0, "e": 0 };
+        
+        userAnswers.forEach((answer, index) => {
+            const question = questions[index];
+            let score = parseInt(answer);
+            if (question.type === "R") {
+                score = 7 - score; // Reverse score
+            }
+            totalScore += score;
+            categoryScores[question.category] += score;
+        });
+
+        return { totalScore, categoryScores };
+    }
+
+    function displayResults() {
+        const { totalScore, categoryScores } = calculateScore();
+        document.getElementById('total-score').textContent = totalScore;
+        
+        const categoryScoresDiv = document.getElementById('category-scores');
+        categoryScoresDiv.innerHTML = '';
+        for (const category in categories) {
+            const categoryName = categories[category];
+            const categoryScore = categoryScores[category];
+            categoryScoresDiv.innerHTML += `<p>${categoryName}: ${categoryScore}</p>`;
+        }
+    }
+
+    nextButton.addEventListener('click', () => {
+        const selectedOption = document.querySelector(`input[name="q${questions[currentQuestionIndex].id}"]:checked`);
+        if (!selectedOption) {
+            alert("Please select an answer before proceeding.");
+            return;
+        }
+        userAnswers[currentQuestionIndex] = selectedOption.value;
+
+        if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            displayQuestion(currentQuestionIndex);
+        } else {
+            surveyForm.style.display = 'none';
+            nextButton.style.display = 'none';
+            previousButton.style.display = 'none';
+            resultSection.style.display = 'block';
+            displayResults();
+        }
+    });
+
+    previousButton.addEventListener('click', () => {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            displayQuestion(currentQuestionIndex);
+        }
+    });
+
+    retakeButton.addEventListener('click', () => {
+        currentQuestionIndex = 0;
+        userAnswers = [];
+        displayQuestion(currentQuestionIndex);
+        surveyForm.style.display = 'block';
+        nextButton.style.display = 'block';
+        resultSection.style.display = 'none';
+    });
+
+    // Initialize the first question
+    displayQuestion(currentQuestionIndex);
+</script>
+</body>
+</html>
