@@ -2,7 +2,7 @@
 FROM node:18-alpine
 
 # Set the working directory inside the container
-WORKDIR /workspace/repo
+WORKDIR /app
 
 # Copy the rest of your application code
 COPY . .
