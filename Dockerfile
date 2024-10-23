@@ -4,14 +4,12 @@ FROM node:18-alpine
 # Set the working directory inside the container
 WORKDIR /workspace/repo
 
-# Copy package.json and package-lock.json first to leverage Docker's layer caching
-COPY package*.json ./
+# Copy the rest of your application code
+COPY . .
 
 # Install dependencies (this includes 'serve' from package.json)
 RUN npm install
 
-# Copy the rest of your application code
-COPY . .
 
 # Expose port 3000 (default for serve)
 EXPOSE 3000
